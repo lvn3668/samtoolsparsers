@@ -1,11 +1,22 @@
 # Author: Lalitha Viswanathan
 # Flagstat Utils
+# Affiliation: Stanford Health Care
 ############################################################
 from typing import re
+############################################################
 def flagstat(filename: str) -> dict:
     try:
         with open(filename) as f:
             text = f.read()
+            # searches for
+            # duplicates,
+            # mapped pass/fail
+            # paired pass/fail
+            # read1 pass/fail
+            # read2 pass/fail
+            # properly paired reads pass/fail
+            # self and mate pass/fail
+            # singletons pass/fail
         pattern = r'(?P<total_pf>[0-9]+) \+ (?P<total_fail>[0-9]+) in total.*\n' \
                   + '(?P<duplicates_pf>[0-9]+) \+ (?P<duplicates_fail>[0-9]+) duplicates.*\n' \
                   + '(?P<mapped_pf>[0-9]+) \+ (?P<mapped_fail>[0-9]+) mapped.*\n' \
@@ -22,9 +33,14 @@ def flagstat(filename: str) -> dict:
             raise Exception('regex did not match')
     except (FileNotFoundError, IOError):
         print("Wrong file or file path")
+    except Exception as exception:
+        print("Exception encountered parsing flagstats %s" %exception)
+    finally:
+        print("Flagstat results parsed successfully")
 
         if not m.groupdict():
             raise Exception('Flagstat results not parsed correctly')
 
     results: dict[str, dict[str, str]] = {'flagstat': m.groupdict()}
     return results
+############################################################
